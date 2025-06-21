@@ -52,7 +52,7 @@ async function saveTool(tool) {
       description_en: tool.description_en,
       description_pt: tool.description_pt,
       description_es: tool.description_es,
-      categories:     tool.categories || [],
+      categories:     Array.isArray(tool.categories) ? tool.categories : (tool.categories ? [tool.categories] : []),
       logoBase64:     tool.logoBase64,
       officialUrl:    tool.officialUrl,
       pricingModel:   tool.pricingModel
@@ -63,10 +63,13 @@ async function saveTool(tool) {
 
 async function addCategories(slug, categories) {
   await init();
-  if (!Array.isArray(categories) || categories.length === 0) return;
+  if (!categories) return;
+  if (!Array.isArray(categories)) categories = [categories];
+  categories = Array.from(new Set(categories)).filter(Boolean);
+  if (categories.length === 0) return;
   await Tool.updateOne(
     { slug },
-    { $addToSet: { categories: { $each: categories } } }
+    { $set: { categories } }
   );
 }
 

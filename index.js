@@ -35,8 +35,14 @@ const TAGS = [
 
   // pré-carrega todos os slugs por tag
   const slugsByTag = {};
+  const categoriesMap = {};
   for (const tag of TAGS) {
-    slugsByTag[tag] = await fetchSlugsForTag(tag);
+    const slugs = await fetchSlugsForTag(tag);
+    slugsByTag[tag] = slugs;
+    for (const slug of slugs) {
+      if (!categoriesMap[slug]) categoriesMap[slug] = [];
+      if (!categoriesMap[slug].includes(tag)) categoriesMap[slug].push(tag);
+    }
   }
 
   // mantém ponteiros para round-robin
@@ -58,12 +64,14 @@ const TAGS = [
         more = true;
         const slug = list[idx];
         if (existing.has(slug)) {
-          console.log(`⏭ ${slug} já existe, pulando.`);
+          console.log(`↻ Atualizando categorias de ${slug}`);
+          tasks.push(limit(() => repository.addCategories(slug, categoriesMap[slug])));
           continue;
         }
         tasks.push(limit(async () => {
           try {
             const tool = await fetchToolDetail(slug);
+            tool.categories = categoriesMap[slug] || [];
             await repository.saveTool(tool);
             console.log(`✔ ${slug} – ${tool.name}`);
           } catch (err) {

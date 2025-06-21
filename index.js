@@ -65,13 +65,13 @@ const TAGS = [
         const slug = list[idx];
         if (existing.has(slug)) {
           console.log(`↻ Atualizando categorias de ${slug}`);
-          tasks.push(limit(() => repository.addCategories(slug, categoriesMap[slug].join(', '))));
+          tasks.push(limit(() => repository.addCategories(slug, categoriesMap[slug])));
           continue;
         }
         tasks.push(limit(async () => {
           try {
             const tool = await fetchToolDetail(slug);
-            tool.categories = (categoriesMap[slug] || []).join(', ');
+            tool.categories = categoriesMap[slug] || [];
             await repository.saveTool(tool);
             console.log(`✔ ${slug} – ${tool.name}`);
           } catch (err) {

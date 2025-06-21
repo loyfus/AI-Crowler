@@ -61,6 +61,15 @@ async function saveTool(tool) {
   );
 }
 
+async function addCategories(slug, categories) {
+  await init();
+  if (!Array.isArray(categories) || categories.length === 0) return;
+  await Tool.updateOne(
+    { slug },
+    { $addToSet: { categories: { $each: categories } } }
+  );
+}
+
 async function getAllTools() {
   await init();
   return Tool.find({}, {
@@ -81,4 +90,4 @@ async function close() {
   }
 }
 
-module.exports = { init, getExistingSlugs, saveTool, getAllTools, close };
+module.exports = { init, getExistingSlugs, saveTool, addCategories, getAllTools, close };

@@ -64,7 +64,8 @@ const TAGS = [
         more = true;
         const slug = list[idx];
         if (existing.has(slug)) {
-          console.log(`⏭ ${slug} já existe, pulando.`);
+          console.log(`↻ Atualizando categorias de ${slug}`);
+          tasks.push(limit(() => repository.addCategories(slug, categoriesMap[slug])));
           continue;
         }
         tasks.push(limit(async () => {

@@ -16,6 +16,7 @@ const toolSchema = new mongoose.Schema({
   description_en: { type: String },
   description_pt: { type: String },
   description_es: { type: String },
+  categories:     { type: [String], default: [] },
   logoBase64:     { type: String },
   officialUrl:    { type: String },
   pricingModel:   { type: String }
@@ -51,6 +52,7 @@ async function saveTool(tool) {
       description_en: tool.description_en,
       description_pt: tool.description_pt,
       description_es: tool.description_es,
+      categories:     tool.categories || [],
       logoBase64:     tool.logoBase64,
       officialUrl:    tool.officialUrl,
       pricingModel:   tool.pricingModel
@@ -67,7 +69,8 @@ async function getAllTools() {
     name: 1,
     description_en: 1,
     description_pt: 1,
-    description_es: 1
+    description_es: 1,
+    categories: 1
   }).lean();
 }
 

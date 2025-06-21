@@ -122,8 +122,14 @@ async function scrapeAll() {
 
   // prefetch all slugs per tag (round-robin)
   const slugsByTag = {};
+  const categoriesMap = {};
   for (const tag of TAGS) {
-    slugsByTag[tag] = await fetchSlugsForTag(tag);
+    const slugs = await fetchSlugsForTag(tag);
+    slugsByTag[tag] = slugs;
+    for (const slug of slugs) {
+      if (!categoriesMap[slug]) categoriesMap[slug] = [];
+      if (!categoriesMap[slug].includes(tag)) categoriesMap[slug].push(tag);
+    }
   }
   const pointers = TAGS.reduce((acc, t) => (acc[t]=0, acc), {});
   let count = 0, more=true;
@@ -142,6 +148,7 @@ async function scrapeAll() {
         tasks.push(limit(async ()=>{
           try {
             const tool = await fetchToolDetail(slug);
+            tool.categories = categoriesMap[slug] || [];
             await repository.saveTool(tool);
           } catch(e){
             /* ignore or log */

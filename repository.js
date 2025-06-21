@@ -1,63 +1,74 @@
 // repository.js
-const { createClient } = require('@supabase/supabase-js');
+const mongoose = require('mongoose');
 
-const supabase = createClient(
-  process.env.SUPABASE_URL,
-  process.env.SUPABASE_SERVICE_KEY
-);
+const uri    = process.env.MONGODB_URI;
+const dbName = process.env.MONGODB_DB_NAME;
+
+if (!uri || !dbName) {
+  console.error('❌ Defina MONGODB_URI e MONGODB_DB_NAME no .env');
+  process.exit(1);
+}
+
+// Modelo e esquema
+const toolSchema = new mongoose.Schema({
+  slug:           { type: String, required: true, unique: true },
+  name:           { type: String, required: true },
+  description_en: { type: String },
+  description_pt: { type: String },
+  description_es: { type: String },
+  logoBase64:     { type: String },
+  officialUrl:    { type: String },
+  pricingModel:   { type: String }
+}, { collection: 'tools' });
+
+const Tool = mongoose.models.Tool || mongoose.model('Tool', toolSchema);
+
+let isConnected = false;
 
 async function init() {
-  // só testa se a tabela existe
-  const { error } = await supabase
-    .from('tools')
-    .select('slug')
-    .limit(1);
-  if (error) throw error;
+  if (isConnected) return;
+  await mongoose.connect(uri, {
+    dbName,
+    useNewUrlParser:    true,
+    useUnifiedTopology: true
+  });
+  isConnected = true;
 }
 
 async function getExistingSlugs() {
-  const { data, error } = await supabase
-    .from('tools')
-    .select('slug');
-  if (error) throw error;
-  return new Set(data.map(r => r.slug));
+  await init();
+  const docs = await Tool.find({}, 'slug').lean();
+  return new Set(docs.map(d => d.slug));
 }
 
 async function saveTool(tool) {
-  // aqui garantimos que usamos tool.slug e tool.name, etc
-  const { slug, name, description_en, description_pt, description_es, logoBase64, officialUrl, pricingModel } = tool;
-
-  const { error } = await supabase
-    .from('tools')
-    .upsert(
-      {
-        slug,           // === tool.slug
-        name,           // === tool.name
-        description_en,
-        description_pt,
-        description_es,
-        logo_base64:   logoBase64,
-        official_url:  officialUrl,
-        pricing_model: pricingModel
-      },
-      { onConflict: 'slug' }
-    );
-
-  if (error) throw error;
+  await init();
+  // upsert pelo slug
+  await Tool.findOneAndUpdate(
+    { slug: tool.slug },
+    {
+      name:           tool.name,
+      description_en: tool.description_en,
+      description_pt: tool.description_pt,
+      description_es: tool.description_es,
+      logoBase64:     tool.logoBase64,
+      officialUrl:    tool.officialUrl,
+      pricingModel:   tool.pricingModel
+    },
+    { upsert: true, new: true, setDefaultsOnInsert: true }
+  );
 }
 
 async function getAllTools() {
-  const { data, error } = await supabase
-    .from('tools')
-    .select(`
-      slug,
-      name,
-      description_en,
-      description_pt,
-      description_es
-    `);
-  if (error) throw error;
-  return data;
+  await init();
+  return Tool.find({}, {
+    _id: 0,
+    slug: 1,
+    name: 1,
+    description_en: 1,
+    description_pt: 1,
+    description_es: 1
+  }).lean();
 }
 
 module.exports = { init, getExistingSlugs, saveTool, getAllTools };

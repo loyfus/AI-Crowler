@@ -1,22 +1,23 @@
 {
   "name": "ia",
   "version": "1.0.0",
-  "description": "",
-  "main": "futureToolsScraper.js",
+  "description": "Scraper e search de ferramentas IA",
+  "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "scrape": "node index.js",
+    "search": "node search.js",
+    "test": "echo \"No tests specified\" && exit 0"
   },
-  "keywords": [],
+  "keywords": ["scraper","ia","tools"],
   "author": "",
   "license": "ISC",
   "type": "commonjs",
   "dependencies": {
-    "@supabase/supabase-js": "^2.50.0",
     "axios": "^1.10.0",
     "cheerio": "^1.1.0",
     "dotenv": "^16.5.0",
     "natural": "^8.1.0",
     "p-limit": "^6.2.0",
-    "sqlite3": "^5.1.7"
+    "mongoose": "^7.3.4"
   }
 }

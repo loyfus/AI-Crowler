@@ -71,4 +71,11 @@ async function getAllTools() {
   }).lean();
 }
 
-module.exports = { init, getExistingSlugs, saveTool, getAllTools };
+async function close() {
+  if (isConnected) {
+    await mongoose.connection.close();
+    isConnected = false;
+  }
+}
+
+module.exports = { init, getExistingSlugs, saveTool, getAllTools, close };

@@ -1,38 +1,48 @@
 // repository.js
 const { createClient } = require('@supabase/supabase-js');
+
 const supabase = createClient(
   process.env.SUPABASE_URL,
   process.env.SUPABASE_SERVICE_KEY
 );
 
 async function init() {
-  // apenas testa conectividade; a tabela já deve existir
-  const { error } = await supabase.from('tools').select('slug').limit(1);
+  // só testa se a tabela existe
+  const { error } = await supabase
+    .from('tools')
+    .select('slug')
+    .limit(1);
   if (error) throw error;
 }
 
 async function getExistingSlugs() {
-  const { data, error } = await supabase.from('tools').select('slug');
+  const { data, error } = await supabase
+    .from('tools')
+    .select('slug');
   if (error) throw error;
   return new Set(data.map(r => r.slug));
 }
 
 async function saveTool(tool) {
-  // observe o uso de snake_case aqui:
+  // aqui garantimos que usamos tool.slug e tool.name, etc
+  const { slug, name, description_en, description_pt, description_es, logoBase64, officialUrl, pricingModel } = tool;
+
   const { error } = await supabase
     .from('tools')
     .upsert(
       {
-        slug, name,
-        description_en: tool.description_en,
-        description_pt: tool.description_pt,
-        description_es: tool.description_es,
-        logo_base64: tool.logoBase64,
-        official_url: tool.officialUrl,
-        pricing_model: tool.pricingModel
+        slug,           // === tool.slug
+        name,           // === tool.name
+        description_en,
+        description_pt,
+        description_es,
+        logo_base64:   logoBase64,
+        official_url:  officialUrl,
+        pricing_model: pricingModel
       },
       { onConflict: 'slug' }
     );
+
   if (error) throw error;
 }
 

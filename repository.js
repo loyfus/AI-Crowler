@@ -16,6 +16,7 @@ const toolSchema = new mongoose.Schema({
   description_en: { type: String },
   description_pt: { type: String },
   description_es: { type: String },
+  categories:     { type: [String], default: [] },
   logoBase64:     { type: String },
   officialUrl:    { type: String },
   pricingModel:   { type: String }
@@ -51,11 +52,24 @@ async function saveTool(tool) {
       description_en: tool.description_en,
       description_pt: tool.description_pt,
       description_es: tool.description_es,
+      categories:     Array.isArray(tool.categories) ? tool.categories : (tool.categories ? [tool.categories] : []),
       logoBase64:     tool.logoBase64,
       officialUrl:    tool.officialUrl,
       pricingModel:   tool.pricingModel
     },
     { upsert: true, new: true, setDefaultsOnInsert: true }
+  );
+}
+
+async function addCategories(slug, categories) {
+  await init();
+  if (!categories) return;
+  if (!Array.isArray(categories)) categories = [categories];
+  categories = Array.from(new Set(categories)).filter(Boolean);
+  if (categories.length === 0) return;
+  await Tool.updateOne(
+    { slug },
+    { $set: { categories } }
   );
 }
 
@@ -67,7 +81,8 @@ async function getAllTools() {
     name: 1,
     description_en: 1,
     description_pt: 1,
-    description_es: 1
+    description_es: 1,
+    categories: 1
   }).lean();
 }
 
@@ -78,4 +93,4 @@ async function close() {
   }
 }
 
-module.exports = { init, getExistingSlugs, saveTool, getAllTools, close };
+module.exports = { init, getExistingSlugs, saveTool, addCategories, getAllTools, close };

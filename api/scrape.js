@@ -143,7 +143,10 @@ async function scrapeAll() {
       if (i < list.length) {
         more = true;
         const slug = list[i];
-        if (existing.has(slug)) continue;
+        if (existing.has(slug)) {
+          tasks.push(limit(() => repository.addCategories(slug, categoriesMap[slug])));
+          continue;
+        }
         count++;
         tasks.push(limit(async ()=>{
           try {

@@ -11,6 +11,7 @@ on:
 
 jobs:
   scrape:
+    environment: .env
     runs-on: ubuntu-latest
     env:
       JETBOOST_ID:       ${{ secrets.JETBOOST_ID }}

@@ -30,12 +30,18 @@ if (require.main === module) {
     console.error('Use: node search.js <termo de busca>');
     process.exit(1);
   }
-  search(query).then(results => {
-    console.log('Top resultados:');
-    results.forEach((r, idx) => {
-      console.log(`${idx+1}. ${r.slug} (${r.score.toFixed(4)}): ${r.name}`);
-    });
-  }).catch(console.error);
+  search(query)
+    .then(results => {
+      console.log('Top resultados:');
+      results.forEach((r, idx) => {
+        console.log(`${idx+1}. ${r.slug} (${r.score.toFixed(4)}): ${r.name}`);
+      });
+    })
+    .catch(err => {
+      console.error(err);
+      process.exitCode = 1;
+    })
+    .finally(() => repository.close());
 }
 
 module.exports = { search };

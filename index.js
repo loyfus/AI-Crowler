@@ -80,9 +80,10 @@ const TAGS = [
 
   await Promise.all(tasks);
   console.log(`✅ Processamento concluído: ${tasks.length} novas ferramentas.`);
+  await repository.close();
 })().catch(err => {
   console.error(err);
-  process.exit(1);
+  repository.close().finally(() => process.exit(1));
 });
 
 async function fetchSlugsForTag(tag) {

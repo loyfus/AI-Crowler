@@ -1,0 +1,40 @@
+# .github/workflows/scrape.yml
+name: Scrape FutureTools
+
+on:
+  # Executa imediatamente em cada push na branch main
+  push:
+    branches:
+      - main
+
+  # Permite acionamento manual pelo GitHub UI
+  workflow_dispatch:
+
+  # Agendamento: todo dia 03:00 UTC
+  schedule:
+    - cron: "0 3 * * *"
+
+jobs:
+  scrape:
+    runs-on: ubuntu-latest
+    env:
+      JETBOOST_ID:       ${{ secrets.JETBOOST_ID }}
+      SUPABASE_URL:      ${{ secrets.SUPABASE_URL }}
+      SUPABASE_SERVICE_KEY: ${{ secrets.SUPABASE_SERVICE_KEY }}
+      CONCURRENCY:       ${{ secrets.CONCURRENCY || '5' }}
+      MAX_TOOLS:         ${{ secrets.MAX_TOOLS || '10' }}
+
+    steps:
+      - name: Checkout code
+        uses: actions/checkout@v3
+
+      - name: Setup Node.js
+        uses: actions/setup-node@v3
+        with:
+          node-version: '16'
+
+      - name: Install dependencies
+        run: npm ci
+
+      - name: Run scraper
+        run: node index.js

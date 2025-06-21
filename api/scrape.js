@@ -144,14 +144,14 @@ async function scrapeAll() {
         more = true;
         const slug = list[i];
         if (existing.has(slug)) {
-          tasks.push(limit(() => repository.addCategories(slug, categoriesMap[slug].join(', '))));
+          tasks.push(limit(() => repository.addCategories(slug, categoriesMap[slug])));
           continue;
         }
         count++;
         tasks.push(limit(async ()=>{
           try {
             const tool = await fetchToolDetail(slug);
-            tool.categories = (categoriesMap[slug] || []).join(', ');
+            tool.categories = categoriesMap[slug] || [];
             await repository.saveTool(tool);
           } catch(e){
             /* ignore or log */

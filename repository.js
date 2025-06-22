@@ -22,6 +22,9 @@ const toolSchema = new mongoose.Schema({
   pricingModel:   { type: String }
 }, { collection: 'tools' });
 
+// create index to speed up category based lookups
+toolSchema.index({ categories: 1 });
+
 const Tool = mongoose.models.Tool || mongoose.model('Tool', toolSchema);
 
 let isConnected = false;

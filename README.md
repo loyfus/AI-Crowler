@@ -2,11 +2,15 @@
 
 Coletor e indexador de ferramentas de IA. Percorre o catálogo do FutureTools,
 normaliza cada ferramenta e grava no MongoDB — é a camada de dados que alimenta a
-busca servida pelo [API de busca](https://github.com/loyfus/indexadorBackEnd).
+busca servida pela [API de busca](https://github.com/loyfus/ai-tools-api).
 
 ![Node](https://img.shields.io/badge/Node-339933?style=flat-square&logo=node.js&logoColor=white)
 ![MongoDB](https://img.shields.io/badge/MongoDB-47A248?style=flat-square&logo=mongodb&logoColor=white)
 ![License](https://img.shields.io/badge/License-MIT-F05138?style=flat-square)
+
+> **Contexto.** Projeto de estudo — não está em produção. A coleta é real, contra a API
+> pública do FutureTools, e escreve no MongoDB que a
+> [ai-tools-api](https://github.com/loyfus/ai-tools-api) consulta.
 
 ## O problema
 

@@ -1,5 +1,5 @@
 {
-  "name": "ia",
+  "name": "ai-crawler",
   "version": "1.0.0",
   "description": "Scraper e search de ferramentas IA",
   "main": "index.js",
@@ -8,7 +8,11 @@
     "search": "node search.js",
     "test": "echo \"No tests specified\" && exit 0"
   },
-  "keywords": ["scraper","ia","tools"],
+  "keywords": [
+    "scraper",
+    "ia",
+    "tools"
+  ],
   "author": "",
   "license": "MIT",
   "type": "commonjs",

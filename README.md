@@ -42,6 +42,20 @@ site de origem responde com 429, o que custa mais tempo do que economiza.
 **O `repository` é idempotente por slug.** Rodar duas vezes não duplica nada —
 importa para um job que pode ser interrompido e retomado sem estado externo.
 
+## Arquitetura
+
+```
+index.js          a coleta: descobre, intercala, raspa, grava
+search.js         índice TF-IDF para consulta local
+repository.js     a única camada que fala com o MongoDB
+api/scrape.js     a mesma coleta como função serverless
+```
+
+`index.js` e `api/scrape.js` compartilham a lógica mas não a entrada: o
+primeiro roda como script e itera todas as tags, o segundo roda como função e
+respeita `MAX_TOOLS`. Manter a lógica em um lugar só e a entrada em outro é o
+que evita a duplicação silenciosa.
+
 ## Rodar
 
 ```bash
